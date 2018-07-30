@@ -1,0 +1,28 @@
+{
+  "name": "s3sync",
+  "version": "1.0.0",
+  "description": "Sync your folder to AWS S3",
+  "bin": {
+    "s3sync": "./cli.js"
+  },
+  "main": "cli.js",
+  "dependencies": {
+    "aws-sdk": "^2.282.1",
+    "commander": "^2.16.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjaminvazquez/aws-s3-folder-sync.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benjaminvazquez/aws-s3-folder-sync/issues"
+  },
+  "homepage": "https://github.com/benjaminvazquez/aws-s3-folder-sync#readme"
+}
