@@ -1,32 +1,42 @@
-'use strict'
+'use strict';
 
 var fs = require('fs');
 var aws = require('aws-sdk');
 
 function syncFolder(currentDir, subfolder, bucketName){
-    let successCount = 0;
-    let skipCount = 0;
-    let errorCount = 0;
-    var bucket = bucketName;
+    var successCount = 0;
+    var skipCount = 0;
+    var errorCount = 0;
     var prefix = subfolder || undefined;
-    var s3 = createS3Manager();
+    var files = [];
+    var s3 = createS3Manager(bucketName);
+
     console.log('Reading path: %s', currentDir);
 
-    try{
-        let files = fs.readdirSync(currentDir);
-        processFiles(files);
-    }catch(err){
-        console.error('An error ocurred trying to read the directory');
-        console.error('%s', err);
+    readDirectoryFiles();
+    processFiles(files);
+
+    function readDirectoryFiles(){
+        try{
+            files = fs.readdirSync(currentDir);
+        }catch(err){
+            console.error('An error ocurred trying to read the directory');
+            console.error('%s', err);
+        }
     }
 
     async function processFiles(files){
-        let filesCount = files.length;
+
+        var filesCount = files.length;
         console.log('%d objects found', filesCount);
-        for(var i = 0; i < filesCount; i++){
-            var currentFile = files[i];
+
+        for (var i = 0; i < filesCount; i++){
+            let currentFile = files[i];
+
             try{
                 let stats = fs.statSync(currentDir+'\\'+currentFile);
+
+                // Check isFile flag to process or skip the object
                 if(stats.isFile()){
                     await pushObject(currentFile, i, stats.size );
                 }else{
@@ -38,12 +48,15 @@ function syncFolder(currentDir, subfolder, bucketName){
                 console.error('%s --> Cannot read stats. %s', currentFile, err);
             }
         }
+        
         console.log('Error: %d, Success: %d, Skiped: %d', errorCount, successCount, skipCount);
     }
 
     function pushObject(currentFile, index, size){
         let fileKey = encodeURIComponent(currentFile);
-        if(prefix) fileKey = encodeURIComponent(prefix)+'/'+fileKey;
+
+        if(prefix) fileKey = encodeURIComponent(prefix) + '/' + fileKey;
+
         return s3.headObject({Key:fileKey}).promise().then(
             function(data){
                 skipCount++;
@@ -74,7 +87,7 @@ function syncFolder(currentDir, subfolder, bucketName){
         );
     }
 
-    function createS3Manager(){
+    function createS3Manager(bucket){
         var manager =  new aws.S3({
             params: {Bucket: bucket}
         });
@@ -85,9 +98,9 @@ function syncFolder(currentDir, subfolder, bucketName){
     function formatBytes(a,b){
         if(0==a)return"0 Bytes";
         var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));
-        return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
+        return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]
+    }
 }
-
 
 
 
