@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Sync your folder to AWS S3",
   "bin": {
-    "s3sync": "./cli.js"
+    "s3sync": "./lib/cli.js"
   },
   "main": "cli.js",
   "dependencies": {
