@@ -41,7 +41,7 @@ This command will install the package in the global environment, and will be ava
 ### Verify the installation
 
 ```shell
-    s3synch --help
+    s3sync --help
 ```
 
 The help should be displayed
